@@ -1,5 +1,7 @@
 # textlint-rule-general-novel-style-ja
 
+[![Build Status](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja.svg?branch=master)](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja)
+
 [textlint](https://github.com/textlint/textlint) rule to follow general style of Japanese novels.
 
 日本の小説における一般的な作法に従うための textlint ルールです。
