@@ -1,0 +1,43 @@
+{
+  "name": "textlint-rule-general-novel-style-ja",
+  "version": "1.0.0",
+  "description": "textlint rule to follow general style of Japanese novels",
+  "author": "IRIDE Monad <iride.monad@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/io-monad/textlint-rule-general-novel-style-ja",
+  "repository": "io-monad/textlint-rule-general-novel-style-ja",
+  "bugs": {
+    "url": "https://github.com/io-monad/textlint-rule-general-novel-style-ja/issues"
+  },
+  "main": "lib/general-novel-style.js",
+  "scripts": {
+    "build": "babel src -d lib --source-maps",
+    "watch": "babel src -d lib --watch --source-maps",
+    "prepublish": "npm run --if-present build",
+    "test": "mocha"
+  },
+  "files": [
+    "src"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "textlint",
+    "rule",
+    "japanese",
+    "novel"
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-preset-es2015": "^6.5.0",
+    "espower-babel": "^4.0.1",
+    "mocha": "^2.4.5",
+    "power-assert": "^1.2.0",
+    "textlint": "^5.3.1",
+    "textlint-tester": "^0.4.1"
+  },
+  "dependencies": {
+    "textlint-rule-helper": "^1.1.5"
+  }
+}
