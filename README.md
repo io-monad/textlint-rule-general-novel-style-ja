@@ -12,7 +12,7 @@
 
 ## 使い方
 
-    $ npm install textlint textlint-rule-max-ten
+    $ npm install textlint textlint-rule-general-novel-style-ja
     $ textlint --rule general-novel-style-ja README.md
 
 ## 適用される作法
