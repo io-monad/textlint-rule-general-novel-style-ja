@@ -24,11 +24,8 @@ const defaultOptions = {
 };
 
 export default function (context, options = {}) {
-    let opts = {};
-    Object.keys(defaultOptions).forEach((key) => {
-        opts[key] = options.hasOwnProperty(key) ? options[key] : defaultOptions[key];
-    });
-    const charsLeadingParagraph = (opts["chars_leading_paragraph"] || "").split("");
+    const opts = Object.assign({}, defaultOptions, options);
+    const charsLeadingParagraph = opts["chars_leading_paragraph"] || "";
     const noPunctuationAtClosingQuote = opts["no_punctuation_at_closing_quote"];
     const spaceAfterMarks = opts["space_after_marks"];
     const evenNumberEllipsises = opts["even_number_ellipsises"];
@@ -50,13 +47,12 @@ export default function (context, options = {}) {
                 const text = getSource(node);
                 const lines = text.split(/\r?\n/);
 
-                const reportMatches = (props) => {
-                    const {pattern, test, message} = props;
+                const reportMatches = ({pattern, test, message}) => {
                     let matches;
                     lines.forEach((line, index) => {
                         pattern.lastIndex = 0;
                         while (matches = pattern.exec(line)) {
-                            if (!test || test(matches)) {
+                            if (!test || test.apply(null, matches)) {
                                 report(node, new RuleError(message, {
                                     line: index,
                                     column: matches.index
@@ -66,7 +62,7 @@ export default function (context, options = {}) {
                     });
                 };
 
-                if (charsLeadingParagraph.length > 0) {
+                if (charsLeadingParagraph) {
                     if (charsLeadingParagraph.indexOf(text.charAt(0)) == -1) {
                         report(node, new RuleError(`段落の先頭に許可されていない文字が存在しています`));
                     }
@@ -89,7 +85,7 @@ export default function (context, options = {}) {
                 if (evenNumberEllipsises) {
                     reportMatches({
                         pattern: /…+/g,
-                        test:    (matches) => { return matches[0].length % 2 == 1 },
+                        test:    (s) => s.length % 2 == 1,
                         message: "連続した三点リーダー(…)の数が偶数ではありません"
                     });
                 }
@@ -97,7 +93,7 @@ export default function (context, options = {}) {
                 if (evenNumberDashes) {
                     reportMatches({
                         pattern: /―+/g,
-                        test:    (matches) => { return matches[0].length % 2 == 1 },
+                        test:    (s) => s.length % 2 == 1,
                         message: "連続したダッシュ(―)の数が偶数ではありません"
                     });
                 }
@@ -126,7 +122,7 @@ export default function (context, options = {}) {
                 if (typeof maxArabicNumeralDigits == "number") {
                     reportMatches({
                         pattern: /[0-9０１２３４５６７８９]+/g,
-                        test:    (matches) => { return matches[0].length > maxArabicNumeralDigits },
+                        test:    (s) => s.length > maxArabicNumeralDigits,
                         message: `${maxArabicNumeralDigits}桁を超えるアラビア数字が使われています`
                     });
                 }
