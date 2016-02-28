@@ -13,6 +13,8 @@ const defaultOptions = {
     "even_number_ellipsises": true,
     // 連続したダッシュ(―)の数は偶数にする
     "even_number_dashes": true,
+    // 連続した句読点(。、)を許可しない
+    "appropriate_use_of_punctuation": true,
     // 連続した中黒(・)を許可しない
     "appropriate_use_of_interpunct": true,
     // 連続した長音符(ー)を許可しない
@@ -30,6 +32,7 @@ export default function (context, options = {}) {
     const spaceAfterMarks = opts["space_after_marks"];
     const evenNumberEllipsises = opts["even_number_ellipsises"];
     const evenNumberDashes = opts["even_number_dashes"];
+    const appropriateUseOfPunctuation = opts["appropriate_use_of_punctuation"];
     const appropriateUseOfInterpunct = opts["appropriate_use_of_interpunct"];
     const appropriateUseOfChoonpu = opts["appropriate_use_of_choonpu"];
     const appropriateUseOfMinusSign = opts["appropriate_use_of_minus_sign"];
@@ -95,6 +98,13 @@ export default function (context, options = {}) {
                         pattern: /―+/g,
                         test:    (s) => s.length % 2 == 1,
                         message: "連続したダッシュ(―)の数が偶数ではありません"
+                    });
+                }
+
+                if (appropriateUseOfPunctuation) {
+                    reportMatches({
+                        pattern: /。。+|、、+/g,
+                        message: "連続した句読点(。、)が使われています"
                     });
                 }
 
