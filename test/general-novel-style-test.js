@@ -34,6 +34,10 @@ tester.run("general-novel-style", rule, {
             options: { "even_number_dashes": false }
         },
         {
+            text: "　ヘロー、、、ワールド。。。",
+            options: { "appropriate_use_of_punctuation": false }
+        },
+        {
             text: "　ヘロー・・・ワールド・・・",
             options: { "appropriate_use_of_interpunct": false }
         },
@@ -107,6 +111,21 @@ tester.run("general-novel-style", rule, {
                     message: "連続したダッシュ(―)の数が偶数ではありません",
                     line: 1,
                     column: 8
+                }
+            ]
+        },
+        {
+            text: "　ヘロー、、、ワールド。。。",
+            errors: [
+                {
+                    message: "連続した句読点(。、)が使われています",
+                    line: 1,
+                    column: 5
+                },
+                {
+                    message: "連続した句読点(。、)が使われています",
+                    line: 1,
+                    column: 12
                 }
             ]
         },
