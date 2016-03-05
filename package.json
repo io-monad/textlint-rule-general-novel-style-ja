@@ -36,7 +36,7 @@
     "mocha": "^2.4.5",
     "power-assert": "^1.2.0",
     "textlint": "^5.3.1",
-    "textlint-tester": "^0.4.1"
+    "textlint-tester": "^0.5.1"
   },
   "dependencies": {
     "textlint-rule-helper": "^1.1.5"
