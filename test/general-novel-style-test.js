@@ -61,6 +61,7 @@ tester.run("general-novel-style", rule, {
     invalid: [
         {
             text: "＃日本語の小説のテストです。",
+            output: "　＃日本語の小説のテストです。",
             errors: [
                 {
                     message: "段落の先頭に許可されていない文字が存在しています",
@@ -71,6 +72,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "「こんにちは、世界。」",
+            output: "「こんにちは、世界」",
             errors: [
                 {
                     message: "句読点(。、)が閉じ括弧の直前に存在しています",
@@ -81,6 +83,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "「これはペンですか？いや、ペンであるはずがない！」",
+            output: "「これはペンですか？　いや、ペンであるはずがない！」",
             errors: [
                 {
                     message: "感嘆符(！)・疑問符(？)の直後にスペースか閉じ括弧が必要です",
@@ -91,6 +94,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "「………なん…だと……」",
+            output: "「…………なん……だと……」",
             errors: [
                 {
                     message: "連続した三点リーダー(…)の数が偶数ではありません",
@@ -106,6 +110,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "『一体いつから―――ペンであると錯覚していた――？』",
+            output: "『一体いつから――――ペンであると錯覚していた――？』",
             errors: [
                 {
                     message: "連続したダッシュ(―)の数が偶数ではありません",
@@ -116,6 +121,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "　ヘロー、、、ワールド。。。",
+            output: "　ヘロー……ワールド……",
             errors: [
                 {
                     message: "連続した句読点(。、)が使われています",
@@ -131,6 +137,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "　ヘロー・・・ワールド・・・",
+            output: "　ヘロー……ワールド……",
             errors: [
                 {
                     message: "連続した中黒(・)が使われています",
@@ -146,6 +153,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "　ヘローーーー・ワーーーールド",
+            output: "　ヘロ――――・ワ――――ルド",
             errors: [
                 {
                     message: "連続した長音符(ー)が使われています",
@@ -161,6 +169,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "　ヘロ−・ワ−ルド",
+            output: "　ヘロー・ワールド",
             errors: [
                 {
                     message: "マイナス記号(−)の直後が数字ではありません",
@@ -176,6 +185,7 @@ tester.run("general-novel-style", rule, {
         },
         {
             text: "　１２３４＋２１＝１２５５",
+            output: "　千二百三十四＋２１＝千二百五十五",
             errors: [
                 {
                     message: "2桁を超えるアラビア数字が使われています",
@@ -190,7 +200,24 @@ tester.run("general-novel-style", rule, {
             ]
         },
         {
+            text: "　１２３．４５＋１．２３＝１２５．５",
+            output: "　百二十三・四五＋１．２３＝百二十五・五",
+            errors: [
+                {
+                    message: "2桁を超えるアラビア数字が使われています",
+                    line: 1,
+                    column: 2
+                },
+                {
+                    message: "2桁を超えるアラビア数字が使われています",
+                    line: 1,
+                    column: 14
+                }
+            ]
+        },
+        {
             text: "　１２３４＋３２１＝１５５５",
+            output: "　千二百三十四＋３２１＝千五百五十五",
             options: { "max_arabic_numeral_digits": 3 },
             errors: [
                 {
@@ -204,6 +231,33 @@ tester.run("general-novel-style", rule, {
                     column: 11
                 }
             ]
-        }
+        },
+        {
+            text: "「複数行の\nテストです。」",
+            output: "「複数行の\nテストです」",
+            errors: [
+                {
+                    message: "句読点(。、)が閉じ括弧の直前に存在しています",
+                    line: 2,
+                    column: 6
+                }
+            ]
+        },
+        {
+            text: "「こんにちは、世界。。。」",
+            output: "「こんにちは、世界」",
+            errors: [
+                {
+                    message: "句読点(。、)が閉じ括弧の直前に存在しています",
+                    line: 1,
+                    column: 12
+                },
+                {
+                    message: "連続した句読点(。、)が使われています",
+                    line: 1,
+                    column: 10
+                }
+            ]
+        },
     ]
 });

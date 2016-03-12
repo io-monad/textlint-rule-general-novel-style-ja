@@ -1,6 +1,7 @@
 "use strict";
 
 import {RuleHelper} from "textlint-rule-helper";
+import kansuji from "kansuji";
 
 const defaultOptions = {
     // 各段落の先頭に許可する文字
@@ -25,7 +26,14 @@ const defaultOptions = {
     "max_arabic_numeral_digits": 2
 };
 
-export default function (context, options = {}) {
+function repeat(str, n) {
+    if (String.prototype.repeat) return String.prototype.repeat.call(str, n);
+    const arr = [];
+    for (let i = 0; i < n; i++) arr.push(str);
+    return arr.join("");
+}
+
+function reporter(context, options = {}) {
     const opts = Object.assign({}, defaultOptions, options);
     const charsLeadingParagraph = opts["chars_leading_paragraph"] || "";
     const noPunctuationAtClosingQuote = opts["no_punctuation_at_closing_quote"];
@@ -39,7 +47,7 @@ export default function (context, options = {}) {
     const maxArabicNumeralDigits = opts["max_arabic_numeral_digits"];
 
     let helper = new RuleHelper(context);
-    let {Syntax, RuleError, report, getSource} = context;
+    let {Syntax, RuleError, fixer, report, getSource} = context;
     return {
         [Syntax.Paragraph](node) {
             if (helper.isChildNode(node, [Syntax.BlockQuote])) {
@@ -48,40 +56,43 @@ export default function (context, options = {}) {
 
             return new Promise((resolve, reject) => {
                 const text = getSource(node);
-                const lines = text.split(/\r?\n/);
 
-                const reportMatches = ({pattern, test, message}) => {
+                const reportMatches = ({pattern, test, message, indexer, fixer}) => {
                     let matches;
-                    lines.forEach((line, index) => {
-                        pattern.lastIndex = 0;
-                        while (matches = pattern.exec(line)) {
-                            if (!test || test.apply(null, matches)) {
-                                report(node, new RuleError(message, {
-                                    line: index,
-                                    column: matches.index
-                                }));
-                            }
+                    pattern.lastIndex = 0;
+                    while (matches = pattern.exec(text)) {
+                        if (!test || test.apply(null, matches)) {
+                            const range = [matches.index, matches.index + matches[0].length];
+                            const args  = [range].concat(matches);
+                            const index = indexer ? indexer.apply(null, args) : matches.index;
+                            const fix   = fixer ? fixer.apply(null, args) : null;
+                            report(node, new RuleError(message, { index, fix }));
                         }
-                    });
+                    }
                 };
 
                 if (charsLeadingParagraph) {
                     if (charsLeadingParagraph.indexOf(text.charAt(0)) == -1) {
-                        report(node, new RuleError(`段落の先頭に許可されていない文字が存在しています`));
+                        report(node, new RuleError(`段落の先頭に許可されていない文字が存在しています`, {
+                            fix: fixer.insertTextBeforeRange([0, 0], charsLeadingParagraph[0])
+                        }));
                     }
                 }
 
                 if (noPunctuationAtClosingQuote) {
                     reportMatches({
-                        pattern: /[。、][」』】〉》）\)”"’'］\]〕｝\}＞>]/g,
-                        message: "句読点(。、)が閉じ括弧の直前に存在しています"
+                        pattern: /[。、]+(?=[」』】〉》）\)”"’'］\]〕｝\}＞>])/g,
+                        message: "句読点(。、)が閉じ括弧の直前に存在しています",
+                        indexer: (range) => range[1] - 1,
+                        fixer:   (range) => fixer.removeRange(range),
                     });
                 }
 
                 if (spaceAfterMarks) {
                     reportMatches({
                         pattern: /[？！](?![　？！」』】〉》）\)”"’'］\]〕｝\}＞>]|$)/g,
-                        message: "感嘆符(！)・疑問符(？)の直後にスペースか閉じ括弧が必要です"
+                        message: "感嘆符(！)・疑問符(？)の直後にスペースか閉じ括弧が必要です",
+                        fixer:   (range) => fixer.insertTextAfterRange(range, "　"),
                     });
                 }
 
@@ -89,7 +100,8 @@ export default function (context, options = {}) {
                     reportMatches({
                         pattern: /…+/g,
                         test:    (s) => s.length % 2 == 1,
-                        message: "連続した三点リーダー(…)の数が偶数ではありません"
+                        message: "連続した三点リーダー(…)の数が偶数ではありません",
+                        fixer:   (range) => fixer.insertTextAfterRange(range, "…"),
                     });
                 }
 
@@ -97,43 +109,49 @@ export default function (context, options = {}) {
                     reportMatches({
                         pattern: /―+/g,
                         test:    (s) => s.length % 2 == 1,
-                        message: "連続したダッシュ(―)の数が偶数ではありません"
+                        message: "連続したダッシュ(―)の数が偶数ではありません",
+                        fixer:   (range) => fixer.insertTextAfterRange(range, "―"),
                     });
                 }
 
                 if (appropriateUseOfPunctuation) {
                     reportMatches({
                         pattern: /。。+|、、+/g,
-                        message: "連続した句読点(。、)が使われています"
+                        message: "連続した句読点(。、)が使われています",
+                        fixer:   (range, s) => fixer.replaceTextRange(range, repeat("……", Math.ceil(s.length / 3))),
                     });
                 }
 
                 if (appropriateUseOfInterpunct) {
                     reportMatches({
                         pattern: /・・+/g,
-                        message: "連続した中黒(・)が使われています"
+                        message: "連続した中黒(・)が使われています",
+                        fixer:   (range, s) => fixer.replaceTextRange(range, repeat("……", Math.ceil(s.length / 3))),
                     });
                 }
 
                 if (appropriateUseOfChoonpu) {
                     reportMatches({
                         pattern: /ーー+/g,
-                        message: "連続した長音符(ー)が使われています"
+                        message: "連続した長音符(ー)が使われています",
+                        fixer:   (range, s) => fixer.replaceTextRange(range, repeat("――", Math.ceil(s.length / 2))),
                     });
                 }
 
                 if (appropriateUseOfMinusSign) {
                     reportMatches({
                         pattern: /−(?![0-9０１２３４５６７８９〇一二三四五六七八九十])/g,
-                        message: "マイナス記号(−)の直後が数字ではありません"
+                        message: "マイナス記号(−)の直後が数字ではありません",
+                        fixer:   (range, s) => fixer.replaceTextRange(range, "ー"),
                     });
                 }
 
                 if (typeof maxArabicNumeralDigits == "number") {
                     reportMatches({
-                        pattern: /[0-9０１２３４５６７８９]+/g,
-                        test:    (s) => s.length > maxArabicNumeralDigits,
-                        message: `${maxArabicNumeralDigits}桁を超えるアラビア数字が使われています`
+                        pattern: /([0-9０１２３４５６７８９]+)(?:[\.．]([0-9０１２３４５６７８９]+))?/g,
+                        test:    (s, a, b) => a.length > maxArabicNumeralDigits || (b && b.length > maxArabicNumeralDigits),
+                        message: `${maxArabicNumeralDigits}桁を超えるアラビア数字が使われています`,
+                        fixer:   (range, s) => fixer.replaceTextRange(range, kansuji(s, { wide: true })),
                     });
                 }
 
@@ -141,4 +159,9 @@ export default function (context, options = {}) {
             });
         }
     };
+}
+
+export default {
+    linter: reporter,
+    fixer: reporter,
 }

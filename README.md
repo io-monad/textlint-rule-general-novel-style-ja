@@ -1,6 +1,6 @@
 # textlint-rule-general-novel-style-ja
 
-[![Build Status](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja.svg?branch=master)](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja)
+[![textlint rule](https://img.shields.io/badge/textlint-fixable-green.svg?style=social)](https://textlint.github.io/) [![Build Status](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja.svg?branch=master)](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja)
 
 [textlint](https://github.com/textlint/textlint) rule to follow general style of Japanese novels.
 
@@ -159,7 +159,7 @@
 {
     "rules": {
         "general-novel-style-ja": {
-            // 各段落の先頭に許可する文字
+            // 各段落の先頭に許可する文字 (false: チェックしない)
             "chars_leading_paragraph": "　「『【〈《（(“\"‘'［[〔｛{＜<",
             // 閉じ括弧の手前に句読点(。、)を置かない
             "no_punctuation_at_closing_quote": true,
