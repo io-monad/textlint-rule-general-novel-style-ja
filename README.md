@@ -1,6 +1,6 @@
 # textlint-rule-general-novel-style-ja
 
-[![textlint rule](https://img.shields.io/badge/textlint-fixable-green.svg?style=social)](https://textlint.github.io/) [![Build Status](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja.svg?branch=master)](https://travis-ci.org/io-monad/textlint-rule-general-novel-style-ja)
+[![textlint rule](https://img.shields.io/badge/textlint-fixable-green.svg?style=social)](https://textlint.github.io/) [![wercker status](https://app.wercker.com/status/b98b7501d0ba05f22cda981be6dde314/s/master "wercker status")](https://app.wercker.com/project/bykey/b98b7501d0ba05f22cda981be6dde314)
 
 [textlint](https://github.com/textlint/textlint) rule to follow general style of Japanese novels.
 
@@ -199,4 +199,3 @@
 ## License
 
 MIT (See LICENSE)
-
