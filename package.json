@@ -40,6 +40,6 @@
   },
   "dependencies": {
     "kansuji": "^1.1.0",
-    "textlint-rule-helper": "^1.1.5"
+    "textlint-rule-helper": "^2.0.0"
   }
 }
