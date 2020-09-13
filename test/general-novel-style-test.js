@@ -248,14 +248,14 @@ tester.run("general-novel-style", rule, {
             output: "「こんにちは、世界」",
             errors: [
                 {
-                    message: "句読点(。、)が閉じ括弧の直前に存在しています",
-                    line: 1,
-                    column: 12
-                },
-                {
                     message: "連続した句読点(。、)が使われています",
                     line: 1,
                     column: 10
+                },
+                {
+                    message: "句読点(。、)が閉じ括弧の直前に存在しています",
+                    line: 1,
+                    column: 12
                 }
             ]
         },

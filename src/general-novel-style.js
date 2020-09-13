@@ -79,15 +79,6 @@ function reporter(context, options = {}) {
                     }
                 }
 
-                if (noPunctuationAtClosingQuote) {
-                    reportMatches({
-                        pattern: /[。、]+(?=[」』】〉》）\)”"’'］\]〕｝\}＞>])/g,
-                        message: "句読点(。、)が閉じ括弧の直前に存在しています",
-                        indexer: (range) => range[1] - 1,
-                        fixer:   (range) => fixer.removeRange(range),
-                    });
-                }
-
                 if (spaceAfterMarks) {
                     reportMatches({
                         pattern: /[？！](?![　？！」』】〉》）\)”"’'］\]〕｝\}＞>]|$)/g,
@@ -135,6 +126,15 @@ function reporter(context, options = {}) {
                         pattern: /ーー+/g,
                         message: "連続した長音符(ー)が使われています",
                         fixer:   (range, s) => fixer.replaceTextRange(range, repeat("――", Math.ceil(s.length / 2))),
+                    });
+                }
+
+                if (noPunctuationAtClosingQuote) {
+                    reportMatches({
+                        pattern: /[。、]+(?=[」』】〉》）\)”"’'］\]〕｝\}＞>])/g,
+                        message: "句読点(。、)が閉じ括弧の直前に存在しています",
+                        indexer: (range) => range[1] - 1,
+                        fixer: (range) => fixer.removeRange(range),
                     });
                 }
 
