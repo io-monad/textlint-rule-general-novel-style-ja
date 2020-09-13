@@ -129,7 +129,7 @@ function reporter(context, options = {}) {
                     });
                 }
 
-                if (noPunctuationAtClosingQuote) {
+                if (noPunctuationAtClosingQuote && !/\[.*[。、]+\]\(.*\)/g.test(text)) {
                     reportMatches({
                         pattern: /[。、]+(?=[」』】〉》）\)”"’'］\]〕｝\}＞>])/g,
                         message: "句読点(。、)が閉じ括弧の直前に存在しています",
@@ -146,7 +146,7 @@ function reporter(context, options = {}) {
                     });
                 }
 
-                if (typeof maxArabicNumeralDigits == "number") {
+                if (typeof maxArabicNumeralDigits == "number" && !/#[0-9]/.test(text)) {
                     reportMatches({
                         pattern: /([0-9０１２３４５６７８９]+)(?:[\.．]([0-9０１２３４５６７８９]+))?/g,
                         test:    (s, a, b) => a.length > maxArabicNumeralDigits || (b && b.length > maxArabicNumeralDigits),
